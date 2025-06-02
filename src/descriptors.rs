@@ -7,6 +7,24 @@ use std::{
 
 use crate::ParseError;
 
+// fn parse_unqualified_segment(data: &str) -> Result<(&str, Option<char>), ParseError> {
+//     let mut chars = data.char_indices();
+//     match chars.next() {
+//         Some((_, '/')) => fail!("Unexpected '/' at start of unqualified segment"),
+//         Some((_, ';')) => fail!("Unexpected ';' at start of unqualified segment"),
+//         mut curr => {
+//             while let Some((i, c)) = curr {
+//                 match c {
+//                     '/' | ';' => return Ok((&data[..i], Some(c))),
+//                     '.' | '[' | '<' | '>' => fail!("Disallowed character in unqualified segment"),
+//                     _ => curr = chars.next(), // ~ keep going
+//                 }
+//             }
+//         }
+//     };
+//     Ok((data, None))
+// }
+
 // Returns the unqualified segment and the following char ('/', ';', or None)
 // or an error. This only extracts the unqualified segment at the start of
 // the given data, and ignores anything following.
@@ -33,6 +51,28 @@ impl<'a> TryFrom<Cow<'a, str>> for ClassName<'a> {
 
     // `value` (as a whole) must consist of a sequence of unqualified segements
     fn try_from(value: Cow<'a, str>) -> Result<Self, Self::Error> {
+        // let mut chars = value.chars();
+        // let mut last_c = match chars.next() {
+        //     None => fail!("Empty class name"),
+        //     Some('/') => fail!("Invalid '/' at start of class name"),
+        //     Some(c) => c,
+        // };
+        // for c in chars {
+        //     match c {
+        //         '.' | '[' | '<' | '>' | ';' => {
+        //             fail!("Disallowed character in class name");
+        //         }
+        //         '/' => {
+        //             if last_c == c {
+        //                 fail!("invalid '//' sequence in class name");
+        //             }
+        //             last_c = c;
+        //         }
+        //         _ => {
+        //             last_c = c;
+        //         }
+        //     }
+        // }
         let mut index = 0;
         loop {
             match parse_unqualified_segment(&value[index..])? {
